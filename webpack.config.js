@@ -1,89 +1,66 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ENV = process.env.NODE_ENV || 'dev';
+var Path = require('path');
+var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const config = module.exports = {
-  context: path.resolve(__dirname, './src'),
+const resolve = path => Path.resolve(__dirname, path);
+
+module.exports = {
+  context: resolve('src'),
   entry: [
-    'webpack-dev-server/client?http://localhost:8080',
+    'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    './app.js'
+    './app.js',
   ],
+
   output: {
-    path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
-    publicPath: '/'
+    path: resolve('public'),
+    publicPath: '/',
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new HtmlWebpackPlugin({
-      title: 'Fantasy Cubing',
-      template: './index.html'
-    }),
-    new HtmlWebpackPlugin({
-      filename: '404.html',
-      title: 'Fantasy Cubing',
-      template: './index.html'
-    }),
-  ],
+
   module: {
     rules: [{
       test: /.js$/,
       exclude: ['node_modules'],
       use: [{
         loader: 'babel-loader',
-        options: {presets: ['es2015', 'react']}
-      }]
+        options: {presets: ['es2015', 'react']},
+      }],
     }, {
       test: /\.css$/,
-      loader: 'style-loader!css-loader'
+      loaders: ['style-loader', 'css-loader'],
     }, {
-      test: /\.styl$/,
-      loader: 'style-loader!css-loader!postcss-loader!stylus-loader'
-    }]
+      test: /\.sass$/,
+      use: ['style-loader', 'css-loader', 'sass-loader'],
+    }],
   },
+
   resolve: {
     modules: [
       'node_modules',
-      path.resolve(__dirname, 'app')
+      resolve('src'),
     ],
 
-    extensions: ['.js', '.css']
-  }
-};
+    extensions: ['.js', '.css', '.sass'],
+  },
 
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      template: resolve('./src/index.html'),
+      inject: 'body',
+    }),
+  ],
 
-if (ENV === 'dev') { // dev specific stuff
-  config.devtool = 'eval';
-  config.devServer = {
-    quiet: false,
-    noInfo: false,
-    lazy: false,
+  devtool: 'inline-source-map',
+
+  devServer: {
+    host: 'localhost',
+    port: 8080,
+
     historyApiFallback: true,
     hot: true,
-    inline: true,
-    publicPath: '/',
-    stats: {colors: true},
-    port: 8080
-  };
-} else { // Produciton stuff
-  config.plugins.push(
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      },
-      output: {
-        comments: false
-      },
-      sourceMap: false
-    }),
-    new ExtractTextPlugin(config.output.cssFilename, {
-      allChunks: true
-    })
-  );
-}
+  },
+};

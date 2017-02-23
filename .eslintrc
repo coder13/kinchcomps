@@ -7,7 +7,7 @@
 		}
 	},
 	"rules": {
-		"indent": [2,"tab"],
+		"indent": ["error", 2],
 		"quotes": [2,"single"],
 		"linebreak-style": [2,"unix"],
 		"semi": [2,"always"],
@@ -59,7 +59,7 @@
 		"no-eval": 2,
 		"no-return-assign": 2,
 		"no-new-wrappers": 2,
-		"comma-dangle": 2,
+		"comma-dangle": [2, "always-multiline"],
 		"no-sparse-arrays": 2,
 		"no-ex-assign": 2
 	}
