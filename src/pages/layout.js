@@ -3,7 +3,7 @@ const NavHelper = require('../components/nav-helper');
 
 module.exports = ({page, competition}) => (
   <NavHelper>
-    <div className=''>
+    <div>
       <nav className='nav has-shadow'>
         <div className='nav-left'>
           <a className='nav-item' href='/'>KinchComps</a>

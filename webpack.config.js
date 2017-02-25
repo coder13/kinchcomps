@@ -72,12 +72,12 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify('production'),
+        'NODE_ENV': JSON.stringify(DEV ? 'development' : 'production'),
       },
     }),
   ].filter(p => !!p),
 
-  devtool: 'cheap-module-source-map',
+  devtool: DEV ? 'inline-source-map' : 'cheap-module-source-map',
 
   devServer: {
     host: 'localhost',

@@ -39,7 +39,7 @@ module.exports = React.createClass({
 
     return (
       <div className='container section is-fluid'>
-        <table className='table'>
+        <table className='table is-narrow'>
           <thead>
             <tr>
               <td>Pos</td>
@@ -47,7 +47,7 @@ module.exports = React.createClass({
               <td>Total</td>
               <td>Medals</td>
               {events.map((event, index) =>
-                <td key={index}>{event.name}</td>
+                <td key={index}>{event.shortName}</td>
               )}
             </tr>
           </thead>

@@ -207,10 +207,14 @@ const Round = State.extend({
   },
 
   fetch () {
-    Api.getResults(this.competition_id, this.event_id, this.id).then(results => {
-      this.results = new Results(results, {event: this.event_id, parse: true});
-      this.collection.trigger('change');
-    });
+    if (this.event_id && this.id) {
+      Api.getResults(this.competition_id, this.event_id, this.id).then(results => {
+        if (!results.error && results.status !== 404) {
+          this.results = new Results(results, {event: this.event_id, parse: true});
+          this.collection.trigger('change');
+        }
+      });
+    }
   },
 });
 
@@ -221,12 +225,28 @@ const Rounds = Collection.extend({
 const Event = State.extend({
   props: {
     name: 'string',
+    id: 'string',
+  },
+
+  derived: {
+    shortName: {
+      deps: ['id'],
+      fn: function () {
+        return EventNames[this.id];
+      },
+    },
   },
 
   allResults (competitor_id) {
     return this.rounds.map(round => {
       return round.results.get(competitor_id);
     });
+  },
+
+  initialize (attrs) {
+    if (attrs.rounds) {
+      this.id = attrs.rounds[0].event_id;
+    }
   },
 
   children: {

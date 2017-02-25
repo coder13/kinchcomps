@@ -1,3 +1,5 @@
+require('./style.css');
+
 const App = require('ampersand-app');
 const Router = require('./router');
 const api = window.Api = require('./api');
