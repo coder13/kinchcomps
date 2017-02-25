@@ -23,7 +23,14 @@ module.exports = React.createClass({
       events.forEach(event => {
         let results = event.allResults(competitor.id);
 
-        kinch[event.name] = results.map(result => result ? result.kinch : 0).reduce((a,b) => a + b) / results.length;
+        let no = results.filter(i => !!i).length;
+        if (no === 0) {
+          kinch[event.name] = null;
+          return;
+        }
+
+        let combined = results.map(result => result ? result.kinch : 0).reduce((a,b) => a + b);
+        kinch[event.name] = combined ? combined / no : 0;
         total += kinch[event.name];
 
         let final = results[results.length - 1];
@@ -32,7 +39,7 @@ module.exports = React.createClass({
         }
       });
 
-      kinch.total = total / events.length;
+      kinch.total = total ? total / events.length : 0;
 
       return kinch;
     }).sort((a,b) => compare(a.total, b.total));
@@ -59,7 +66,7 @@ module.exports = React.createClass({
                 <td>{fixed(competitor.total)}</td>
                 <td>{competitor.medals}</td>
                 {events.map((event, index) =>
-                  <td key={index}>{fixed(competitor[event.name])}</td>
+                  <td key={index}>{competitor[event.name] === null ? ' ' : fixed(competitor[event.name])}</td>
                 )}
               </tr>
             ))}
