@@ -1,13 +1,24 @@
 const React = require('react');
+const NavHelper = require('../components/nav-helper');
 
-module.exports = ({page}) => (
-  <div className=''>
-    <nav className='nav has-shadow'>
-      <div className='nav-left'>
-        <a className='nav-item'>KinchComps</a>
-      </div>
-    </nav>
+module.exports = ({page, competition}) => (
+  <NavHelper>
+    <div className=''>
+      <nav className='nav has-shadow'>
+        <div className='nav-left'>
+          <a className='nav-item' href='/'>KinchComps</a>
+        </div>
 
-    {page}
-  </div>
+        {competition ?
+          <div className='nav-left'>
+            <h3 className='nav-item is-3'>
+              {competition.name}
+            </h3>
+          </div>
+        : null}
+      </nav>
+
+      {page}
+    </div>
+  </NavHelper>
 );

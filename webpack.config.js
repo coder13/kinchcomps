@@ -1,16 +1,29 @@
-var Path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const Path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const DEV = process.env.NODE_ENV === 'dev';
 
 const resolve = path => Path.resolve(__dirname, path);
 
+const loaders = {
+  reactHot: {
+    loader: 'react-hot-loader',
+  },
+  babel: {
+    loader: 'babel-loader',
+    options: {
+      presets: ['es2015', 'react'],
+    },
+  },
+};
+
 module.exports = {
   context: resolve('src'),
-  entry: [
+  entry: DEV ? [
     'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/only-dev-server',
     './app.js',
-  ],
+  ] : './app.js',
 
   output: {
     filename: 'bundle.js',
@@ -22,20 +35,10 @@ module.exports = {
     rules: [{
       test: /.js$/,
       exclude: /node_modules/,
-      loaders: [{
-        loader: 'react-hot-loader',
-      }, {
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015', 'react'],
-        },
-      }],
+      loaders: DEV ? [loaders.reactHot, loaders.babel] : [loaders.babel],
     }, {
       test: /\.css$/,
       loaders: ['style-loader', 'css-loader'],
-    }, {
-      test: /\.s[a|c]ss$/,
-      loaders: ['style-loader', 'css-loader', 'sass-loader'],
     }, {
       test: /\.(png|jpe?g|gif|woff|woff2|eot|ttf|svg)$/,
       loaders: ['url-loader?limit=10000'],
@@ -48,20 +51,33 @@ module.exports = {
       resolve('src'),
     ],
 
-    extensions: ['.js', '.css', '.sass'],
+    extensions: ['.js', '.css'],
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
+    DEV ? new webpack.HotModuleReplacementPlugin() : null,
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       template: resolve('./src/index.html'),
       inject: 'body',
     }),
-  ],
+    new HtmlWebpackPlugin({
+      filename: '404.html',
+      template: resolve('./src/index.html'),
+      inject: 'body',
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: DEV,
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production'),
+      },
+    }),
+  ].filter(p => !!p),
 
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
 
   devServer: {
     host: 'localhost',
@@ -71,10 +87,3 @@ module.exports = {
     hot: true,
   },
 };
-
-/*
-{
-        loader: 'babel-loader',
-        options: {presets: ['es2015', 'react']},
-      }
-      */

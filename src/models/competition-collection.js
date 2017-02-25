@@ -1,8 +1,6 @@
-const Collection = require('ampersand-rest-collection');
-const Competition = require('./competiton');
+const Collection = require('ampersand-collection');
+const Competition = require('./competition');
 
 module.exports = Collection.extend({
   model: Competition,
-
-  url: 'http://m.cubecomps.com/competitions.json',
 });
